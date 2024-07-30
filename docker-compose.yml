@@ -5,6 +5,7 @@ services:
     command: ['--smp=1', '--memory=1GB', '--overprovisioned=1', '--developer-mode=1', '--seeds=ws-scylla-1']
     ports:
       - '9040:9042'
+      - '19040:19042'
     networks:
       ws-scylla:
     volumes:
@@ -22,6 +23,7 @@ services:
     container_name: ws-scylla-2
     ports:
       - '9041:9042'
+      - '19041:19042'
     volumes:
       - scylla-2:/var/lib/scylla
       - ./configs:/etc/scylla/configs
@@ -31,6 +33,7 @@ services:
     container_name: ws-scylla-3
     ports:
       - '9042:9042'
+      - '19042:19042'
     volumes:
       - scylla-3:/var/lib/scylla
       - ./configs:/etc/scylla/configs
