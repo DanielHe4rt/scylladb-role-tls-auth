@@ -1,0 +1,10 @@
+[package]
+name = "rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+openssl = "0.10.66"
+scylla = { version = "0.13.1", features = ["ssl"] }
+tokio = { version = "1.39.2", features = ["full"] }
