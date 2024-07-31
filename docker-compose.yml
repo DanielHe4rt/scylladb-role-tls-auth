@@ -12,12 +12,7 @@ services:
       - scylla-1:/var/lib/scylla
       - ./configs:/etc/scylla/configs
       - ./certificates:/etc/scylla/certs
-    healthcheck:
-      test: ['CMD-SHELL', 'cqlsh -e "SHOW VERSION" || exit 1']
-      interval: 15s
-      timeout: 30s
-      retries: 15
-      start_period: 30s
+      - ./configs/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties  
   ws-scylla-2: &scylla-replica
     <<: *scylla-main
     container_name: ws-scylla-2
@@ -26,6 +21,7 @@ services:
       - '19041:19042'
     volumes:
       - scylla-2:/var/lib/scylla
+      - ./configs/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties  
       - ./configs:/etc/scylla/configs
       - ./certificates:/etc/scylla/certs
   ws-scylla-3:
@@ -36,6 +32,7 @@ services:
       - '19042:19042'
     volumes:
       - scylla-3:/var/lib/scylla
+      - ./configs/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties  
       - ./configs:/etc/scylla/configs
       - ./certificates:/etc/scylla/certs
 volumes:

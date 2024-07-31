@@ -129,7 +129,7 @@ native_shard_aware_transport_port: 19042
 # for native_transport_port. Setting native_transport_port_ssl to a different value
 # from native_transport_port will use encryption for native_transport_port_ssl while
 # keeping native_transport_port unencrypted.
-#native_transport_port_ssl: 9142
+# native_transport_port_ssl: 9142
 
 # Like native_transport_port_ssl, but clients are forwarded to specific shards, based on the
 # client-side port numbers.

@@ -28,7 +28,11 @@ root-cert:
 	echo "Generating root certificate"
 	openssl genpkey -algorithm RSA -out "./${DIRECTORY}/${CA_KEY}.pem" -pkeyopt rsa_keygen_bits:2048
 	openssl req -x509 -new -key "./${DIRECTORY}/${CA_KEY}.pem" -days 3650 -out "./${DIRECTORY}/${CA_CERT}.pem" -subj "/CN=cassandra"
-	
+	@echo "Generating server certificate"
+	openssl genpkey -algorithm RSA -out "./${DIRECTORY}/server_key.pem" -pkeyopt rsa_keygen_bits:2048
+	openssl req -new -key "./${DIRECTORY}/server_key.pem" -out "./${DIRECTORY}/server.csr" -subj "/CN=server"
+	openssl x509 -req -in "./${DIRECTORY}/server.csr" -CA "./${DIRECTORY}/${CA_CERT}.pem" -CAkey "./${DIRECTORY}/${CA_KEY}.pem" -CAcreateserial -out "./${DIRECTORY}/server_cert.pem" -days 365
+
 .PHONY: user-cert
 user-cert: 
 	@echo "Generating root certificate for $(role)"
@@ -39,10 +43,12 @@ user-cert:
 .PHONY: truststore
 truststore:
 	@echo "Generating truststore"
-	rm -f "./${DIRECTORY}/truststore.pem"
-	cat ./${DIRECTORY}/*_cert.pem > ./${DIRECTORY}/truststore.pem
-	openssl x509 -in "./${DIRECTORY}/truststore.pem" -text -noout
-
+	rm -f "./${DIRECTORY}/server_truststore.pem"
+	rm -f "./${DIRECTORY}/$(role)_truststore.pem"
+	cat ./${DIRECTORY}/*_cert.pem > ./${DIRECTORY}/server_truststore.pem
+	openssl x509 -in "./${DIRECTORY}/server_truststore.pem" -text -noout
+	cat ./${DIRECTORY}/root_cert.pem ./${DIRECTORY}/server_cert.pem ./${DIRECTORY}/$(role)_cert.pem > ./${DIRECTORY}/$(role)_truststore.pem;
+	openssl x509 -in "./${DIRECTORY}/$(role)_truststore.pem" -text -noout
 
 
 .PHONY: auth-type
@@ -82,16 +88,21 @@ setup:
 	mkdir -p ${DIRECTORY}
 	@$(MAKE) root-cert 
 	@$(MAKE) user-cert role=developer
-	@$(MAKE) truststore
+	@$(MAKE) truststore role=developer
+	@docker compose up -d
+	sleep 10
+	@$(MAKE) auth-type auth=password
+	@$(MAKE) create-role-cql role=developer
+	@$(MAKE) auth-type auth=role
 	@echo "\n\nDone! Now you can start your ScyllaDB cluster via docker-compose."
 
 
 .PHONY: create-role-cql
 create-role-cql:
 	@echo "Creating role $(role) in docker-cql"
-	for node in ${NODES}; do \
+	@for node in ${NODES}; do \
 		echo "Processing $$node..."; \
-		docker exec -it $$node cqlsh -u cassandra -p cassandra -e "CREATE ROLE IF NOT EXISTS $(role) WITH PASSWORD = '$(password)' AND LOGIN = true;"; \
+		docker exec -it $$node cqlsh -u cassandra -p cassandra -e "CREATE ROLE IF NOT EXISTS '$(role)' WITH LOGIN = true;"; \
 	done
 
 .PHONY: clean

@@ -128,7 +128,7 @@ native_shard_aware_transport_port: 19042
 # for native_transport_port. Setting native_transport_port_ssl to a different value
 # from native_transport_port will use encryption for native_transport_port_ssl while
 # keeping native_transport_port unencrypted.
-#native_transport_port_ssl: 9142
+# native_transport_port_ssl: 9142
 
 # Like native_transport_port_ssl, but clients are forwarded to specific shards, based on the
 # client-side port numbers.
@@ -464,8 +464,8 @@ commitlog_total_space_in_mb: -1
 # enable or disable client/server encryption.
 client_encryption_options:
   enabled: true
-  certificate: /etc/scylla/certs/root_cert.pem
-  keyfile: /etc/scylla/certs/root_key.pem
+  certificate: /etc/scylla/certs/server_cert.pem
+  keyfile: /etc/scylla/certs/server_key.pem
   truststore: /etc/scylla/certs/truststore.pem
   require_client_auth: true
 
