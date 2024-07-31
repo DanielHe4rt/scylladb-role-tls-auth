@@ -84,17 +84,23 @@ auth-type:
 .PHONY: setup
 setup:
 	echo "Setting up the environment"
-	rm -rf ./${DIRECTORY}
-	mkdir -p ${DIRECTORY}
+	@rm -rf ./${DIRECTORY}
+	@mkdir -p ${DIRECTORY}
 	@$(MAKE) root-cert 
 	@$(MAKE) user-cert role=developer
 	@$(MAKE) truststore role=developer
 	@docker compose up -d
-	sleep 10
+	@sleep 10
 	@$(MAKE) auth-type auth=password
+	@sleep 2
 	@$(MAKE) create-role-cql role=developer
 	@$(MAKE) auth-type auth=role
-	@echo "\n\nDone! Now you can start your ScyllaDB cluster via docker-compose."
+
+	@echo "\n\nDone! Now your ScyllaDB cluster is ready to use authentication with:"
+	@echo " -> Role Encrypted Certificates <-"
+	@echo "\n"
+	@echo "Make sure to load the cqlshrc file in your cqlsh client"
+	@echo "Read also: https://opensource.docs.scylladb.com/branch-6.0/operating-scylla/security/gen-cqlsh-file.html"
 
 
 .PHONY: create-role-cql

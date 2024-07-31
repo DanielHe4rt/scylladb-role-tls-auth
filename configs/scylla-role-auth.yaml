@@ -466,7 +466,7 @@ client_encryption_options:
   enabled: true
   certificate: /etc/scylla/certs/server_cert.pem
   keyfile: /etc/scylla/certs/server_key.pem
-  truststore: /etc/scylla/certs/truststore.pem
+  truststore: /etc/scylla/certs/server_truststore.pem
   require_client_auth: true
 
 # internode_compression controls whether traffic between nodes is

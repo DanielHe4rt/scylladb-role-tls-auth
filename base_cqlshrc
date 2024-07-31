@@ -1,0 +1,13 @@
+[connection]
+hostname = 127.0.0.1
+port = 9042
+
+[cql]
+version = 3.3.1
+
+[ssl]
+certfile = /your/absulute/path/to/cert-based-auth/certificates/developer_truststore.pem
+usercert = /your/absulute/path/to/cert-based-auth/certificates/developer_cert.pem
+userkey = /your/absulute/path/to/cert-based-auth/certificates/developer_key.pem
+validate = true
+
