@@ -19,8 +19,15 @@ role = scylla-role-auth.yaml
 password = scylla-auth.yaml
 
 # Generate key pairs and certificates for each role
-.PHONY: root-cert
-
+.PHONY: generate-certs
+generate-certs:
+	@echo "Setting up the certificates..."
+	@rm -rf ./${DIRECTORY}/*
+	@mkdir -p ${DIRECTORY}
+	@$(MAKE) root-cert 
+	@$(MAKE) user-cert role=developer
+	@$(MAKE) truststore role=developer
+	
 # Rule to generate the root certificate
 
 .PHONY: root-cert
@@ -83,12 +90,7 @@ auth-type:
 
 .PHONY: setup-scylla
 setup-scylla:
-	echo "Setting up the environment"
-	@rm -rf ./${DIRECTORY}
-	@mkdir -p ${DIRECTORY}
-	@$(MAKE) root-cert 
-	@$(MAKE) user-cert role=developer
-	@$(MAKE) truststore role=developer
+	echo "Setting up ScyllaDB Cluster..."
 	@docker compose up -d
 	@echo "Scylla is running without authentication!"
 
