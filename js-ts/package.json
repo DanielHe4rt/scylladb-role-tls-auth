@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "tls": "tsx ./index.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@lambda-group/scylladb": "^0.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4"
+  }
+}

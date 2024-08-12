@@ -15,8 +15,6 @@ struct Role {
 
 #[derive(FromRow, Debug)]
 struct ConnectedClient {
-    address: IpAddr,
-    port: i32,
     username: String,
     driver_name: String,
     driver_version: String,
@@ -31,13 +29,13 @@ async fn main() -> anyhow::Result<()> {
     context_builder.set_verify(SslVerifyMode::PEER);
 
     let session = SessionBuilder::new()
-        .known_nodes(["localhost:9042"])
+        .known_nodes(["localhost:9142"])
         .ssl_context(Some(context_builder.build()))
         .build()
         .await?;
 
     let roles_query = Query::new("SELECT * FROM system.roles");
-    let connected_clients_query = Query::new("SELECT address, port, username, driver_name, driver_version FROM system.clients");
+    let connected_clients_query = Query::new("SELECT username, driver_name, driver_version FROM system.clients");
 
     let mut current_roles = session.query(roles_query, &[]).await?
         .rows_typed::<Role>()?;

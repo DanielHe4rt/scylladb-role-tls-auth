@@ -80,9 +80,21 @@ auth-type:
 		docker exec -it $$node supervisorctl start scylla; \
 	done
 
+
+.PHONY: setup-scylla
+setup-scylla:
+	echo "Setting up the environment"
+	@rm -rf ./${DIRECTORY}
+	@mkdir -p ${DIRECTORY}
+	@$(MAKE) root-cert 
+	@$(MAKE) user-cert role=developer
+	@$(MAKE) truststore role=developer
+	@docker compose up -d
+	@echo "Scylla is running without authentication!"
+
 # Clean up generated files
-.PHONY: setup
-setup:
+.PHONY: full-process
+full-process:
 	echo "Setting up the environment"
 	@rm -rf ./${DIRECTORY}
 	@mkdir -p ${DIRECTORY}
@@ -113,4 +125,7 @@ create-role-cql:
 
 .PHONY: clean
 clean:
-	rm -rf ./${DIRECTORY}/*
+	@docker compose down --volumes
+	@rm -rf ./${DIRECTORY}/*
+	@echo "Certificates removed! Now you can run a fresh setup."
+	
