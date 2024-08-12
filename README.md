@@ -46,9 +46,9 @@ openssl req -new -key "./developer_key.pem" -out "./developer.csr" -subj "/CN=de
 openssl x509 -req -in "./developer.csr" -CA "./root_cert.pem" -CAkey "./root_key.pem" -CAcreateserial -out "./developer.pem" -days 365
 ```
 
-After you enable the TLS under `scylla.yaml`:
-```yaml
+After you enable the TLS under `scylla.yaml` you can check under `auth_certificate_role_queries` the `query` regular expression to be executed (and you're free to change it):
 
+```yaml
 authenticator: com.scylladb.auth.CertificateAuthenticator
 auth_certificate_role_queries:
   - source: SUBJECT
@@ -61,7 +61,71 @@ client_encryption_options:
   truststore: /etc/scylla/certs/server_truststore.pem
   require_client_auth: true
 ```
-## Quick Setup
+
+## Quick Win: Run the example with JS/Rust
+
+Create the environment by running:
+
+```sh
+make setup-scylla-with-tls
+```
+
+This command will:
+
+* Create the base certificates (root and developer)
+* Run a ScyllaDB Cluster (3 nodes)
+* Switch to `PasswordAuthenticator` authentication mode
+* Login as superuser and create `developer` role
+* Switch to `com.scylladb.auth.CertificateAuthenticator` authentication mode
+
+### Quick Win: Running with Rust
+
+Enter the `rust` directory and run the project:
+
+```sh
+cd rust
+cargo run
+```
+
+Output:
+
+```log
+Role { role: "cassandra", can_login: true, is_superuser: true, member_of: None, salted_hash: Some("$giant-hash") }
+Role { role: "developer", can_login: true, is_superuser: false, member_of: None, salted_hash: None }
+ConnectedClient { username: "developer", driver_name: "scylla-rust-driver", driver_version: "0.13.1" }
+```truecies and run the project:
+
+```sh
+cd js-ts
+npm install
+npm run tls
+```
+
+Output:
+
+```log
+{
+  can_login: true,
+  is_superuser: true,
+  member_of: null,
+  role: 'cassandra',
+  salted_hash: '$giant-hash-here'
+}
+{
+  can_login: true,
+  is_superuser: false,
+  member_of: null,
+  role: 'developer',
+  salted_hash: null
+}
+{
+  driver_name: 'scylla-rust-driver',
+  driver_version: '0.13.1',
+  username: 'developer'
+}
+```
+
+## Hands On
 
 ```bash
 make setup # This will generate the certificates and the truststore
@@ -79,8 +143,8 @@ cqlsh --ssl # WIP
 
 Links:
 
-- <https://opensource.docs.scylladb.com/stable/operating-scylla/security/authentication.html>
-- <https://opensource.docs.scylladb.com/stable/operating-scylla/security/client-node-encryption.html>
+* <https://opensource.docs.scylladb.com/stable/operating-scylla/security/authentication.html>
+* <https://opensource.docs.scylladb.com/stable/operating-scylla/security/client-node-encryption.html>
 
 ## What is this?
 

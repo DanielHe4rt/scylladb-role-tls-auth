@@ -94,7 +94,7 @@ setup-scylla:
 
 # Clean up generated files
 .PHONY: full-process
-full-process:
+setup-scylla-with-tls:
 	echo "Setting up the environment"
 	@rm -rf ./${DIRECTORY}
 	@mkdir -p ${DIRECTORY}
