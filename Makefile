@@ -61,7 +61,7 @@ truststore:
 .PHONY: auth-type
 auth-type:
 	@echo "Setting up ScyllaDB authentication type"
-	
+
 	@if [ -z "$(auth)" ]; then \
 		echo "No auth type selected. Try with: no-auth | password | role-cert"; \
 		exit 1; \
@@ -95,7 +95,7 @@ setup-scylla:
 	@echo "Scylla is running without authentication!"
 
 # Clean up generated files
-.PHONY: full-process
+.PHONY: setup-scylla-with-tls
 setup-scylla-with-tls:
 	echo "Setting up the environment"
 	@rm -rf ./${DIRECTORY}
@@ -104,6 +104,7 @@ setup-scylla-with-tls:
 	@$(MAKE) user-cert role=developer
 	@$(MAKE) truststore role=developer
 	@docker compose up -d
+	@echo "Settling the ScyllaDB Cluster"
 	@sleep 10
 	@$(MAKE) auth-type auth=password
 	@sleep 2
@@ -131,3 +132,8 @@ clean:
 	@rm -rf ./${DIRECTORY}/*
 	@echo "Certificates removed! Now you can run a fresh setup."
 	
+
+.PHONY: check-tls
+check-tls:
+	@echo "-> Checking TLS connection..."
+	@sh scripts/check-tls.sh
